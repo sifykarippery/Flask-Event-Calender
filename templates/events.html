@@ -1,0 +1,159 @@
+<html>
+ <head>
+	<title>Events | Klorofil</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link rel="stylesheet" href="static/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="static/vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="static/vendor/linearicons/style.css">
+	<link rel="stylesheet" href="static/vendor/chartist/css/chartist-custom.css">
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="static/css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="static/css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="static/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="static/img/favicon.png">
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="events.html"><img src="static/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+			</div>
+            <div class="container-fluid">
+                    <div class="navbar-btn navbar-btn-middle" style="font-size: larger">
+					<a class="btn btn-success update-pro" href="#" title="Upgrade to Pro" target="_blank"> <span style="font-size: larger; font-weight: bold; letter-spacing: 5px">EVENTS</span></a>
+				</div>
+            </div>
+		</nav>
+        <div class="main" style="width:100%">
+            <div class="main-content">
+				<div class="container-fluid">
+                    <div class="row">
+						<div class="col-md-6">
+							<!-- RECENT PURCHASES -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">Register Events</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+									</div>
+								</div>
+								<div class="panel-body">
+                                    <form action="" method="POST" role="form">
+                                        {% if event is not none %}
+                                        <input type="text" class="form-control" id="eventTitle" name="eventTitle" value="{{ event.summary }}" placeholder="Event Title">
+                                        {% else %}
+                                        <input type="text" class="form-control" id="eventTitle" name="eventTitle"  placeholder="Event Title">
+                                        {% endif %}
+                                        <br/>
+                                        {% if event is not none %}
+                                        <input type="date" class="form-control" id="eventDate" name="eventDate" value="{{ event.start.dateTime | dateonly(fmt="%Y-%m-%d") }}" placeholder="Event Date">
+                                        {% else %}
+                                        <input type="date" class="form-control" id="eventDate" name="eventDate"  placeholder="Event Date">
+                                        {% endif %}
+                                        <br/>
+                                        {% if event is not none %}
+                                        <input type="time" class="form-control" id="eventTime" name="eventTime" value="{{ event.start.dateTime | timeonly }}" placeholder="Event Time">
+                                        {% else %}
+                                        <input type="time" class="form-control" id="eventTime" name="eventTime" placeholder="Event Time">
+                                        {% endif %}
+                                        <br/>
+                                        <div class="row">
+                                        {% if event is not none %}
+                                        <div class="col-md-3">
+											<button type="submit" class="btn btn-info btn-block" name="submit_button" value="{{ event.id }}">Edit & Save Event</button>
+										</div>
+                                        {% else %}
+										<div class="col-md-3">
+											<button type="submit" class="btn btn-info btn-block" name="submit_button" value="">Submit Event</button>
+										</div>
+                                        {% endif %}
+                                        <div class="col-md-3">
+                                            <a class="btn btn-warning" href={{ url_for('event_data') }} role="button"><i class="fa fa-undo"></i>Reset</a>
+                                        </div>
+                                        </div>
+                                    </form>
+								</div>
+								<div class="panel-footer">
+									<div class="row">
+                                         {% with messages = get_flashed_messages(with_categories=true) %}
+                                            {% if messages %}
+                                        {% for message in messages %}
+                                            {% if "Error" not in message[1] %}
+                                                <div class="alert alert-info">
+                                                <strong>Success! </strong> {{ message[1] }}
+                                                </div>
+                                            {% endif %}
+                                            {% if "Error" in message[1] %}
+                                                <div class="alert alert-danger">
+                                                <strong>Error: </strong> {{ message[1] }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+							</div>
+                            </div>
+						</div>
+						<div class="col-md-6">
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">Registered Events</h3>
+									<div class="right">
+										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+									</div>
+								</div>
+								<div class="panel-body no-padding">
+                                    <table class="table table-striped">
+										<thead>
+											<tr>
+                                                <th></th>
+                                                <th></th>
+												<th>Title</th>
+												<th>Event Date</th>
+												<th>Event Time</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for event in events %}
+                                            <tr>
+                                                <td><a class="btn btn-warning" href={{ url_for('edit_event' ,event_id=event.id) }} role="button"><i class="fa fa-edit"></i></a></td>
+                                                <td><a class="btn btn-danger" href={{ url_for('delete_event' ,event_id=event.id) }} role="button"><i class="fa fa-trash"></i></a></td>
+                                                <td>{{ event.summary }}</td>
+                                                <td>{{ event.start.dateTime | dateonly }}</td>
+                                                <td>{{ event.start.dateTime | timeonly}}</td>
+                                            </tr>
+                                            {% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+		<footer>
+			<div class="container-fluid">
+				<p class="copyright">&copy; 2017 <a href="https://www.themeineed.com" target="_blank">Copied</a>. All Rights Reserved.</p>
+			</div>
+		</footer>
+    </div>
+
+    <script src="static/vendor/jquery/jquery.min.js"></script>
+	<script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="static/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="static/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js"></script>
+	<script src="static/vendor/chartist/js/chartist.min.js"></script>
+	<script src="static/scripts/klorofil-common.js"></script>
+</body>
+</html>
